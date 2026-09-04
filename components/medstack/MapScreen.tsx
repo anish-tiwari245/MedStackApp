@@ -6,13 +6,11 @@ import { sortBySeverityDesc } from '@/lib/severity';
 import DetailCard from './DetailCard';
 import NodeMap from './maps/NodeMap';
 import ListMap from './maps/ListMap';
-import SignalMap from './maps/SignalMap';
 import type { Drug, Group, MapType, Pair } from '@/types/medstack';
 
 const MAP_TABS: { type: MapType; label: string }[] = [
   { type: 'node', label: 'Node' },
   { type: 'list', label: 'List' },
-  { type: 'signal', label: 'Signals' },
 ];
 
 export default function MapScreen({
@@ -115,7 +113,6 @@ export default function MapScreen({
           {loading && <Text style={styles.loadingText}>Checking live interactions...</Text>}
           {mapType === 'node' && <NodeMap drugs={viewDrugs} pairs={viewPairs} labelFor={labelFor} onSelectPair={setSelected} />}
           {mapType === 'list' && <ListMap pairs={viewPairs} selected={selected} labelFor={labelFor} onSelectPair={setSelected} />}
-          {mapType === 'signal' && <SignalMap pairs={viewPairs} selected={selected} labelFor={labelFor} onSelectPair={setSelected} />}
           <Text style={styles.mapHint}>Tap any medication pair for details</Text>
         </View>
       )}

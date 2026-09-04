@@ -9,6 +9,7 @@ import type { Drug } from '@/types/medstack';
 export default function ScanScreen({ onAdd }: { onAdd: (d: Omit<Drug, 'id'>) => void }) {
   const [permission, requestPermission] = useCameraPermissions();
   const [status, setStatus] = useState<'idle' | 'live' | 'reading'>('live');
+  const [cameraReady, setCameraReady] = useState(false);
   const [error, setError] = useState('');
   const [manual, setManual] = useState(false);
   const [mName, setMName] = useState('');
@@ -33,7 +34,7 @@ export default function ScanScreen({ onAdd }: { onAdd: (d: Omit<Drug, 'id'>) => 
   }
 
   const capture = async () => {
-    if (!cameraRef.current) return;
+    if (!cameraRef.current || !cameraReady) return;
     setStatus('reading');
     setError('');
     try {
@@ -62,10 +63,23 @@ export default function ScanScreen({ onAdd }: { onAdd: (d: Omit<Drug, 'id'>) => 
 
       {!manual && (
         <View style={[sharedStyles.card, { flex: 1, marginTop: 10, overflow: 'hidden' }]}>
-          <CameraView ref={cameraRef} style={{ flex: 1 }} facing="back" />
+          <CameraView
+            ref={cameraRef}
+            style={{ flex: 1 }}
+            facing="back"
+            onCameraReady={() => setCameraReady(true)}
+          />
           <View style={{ padding: 12, gap: 8 }}>
-            <TouchableOpacity style={sharedStyles.btnPrimaryFull} onPress={capture} disabled={status === 'reading'}>
-              {status === 'reading' ? <ActivityIndicator color="#fff" /> : <Text style={sharedStyles.btnPrimaryText}>Scan label</Text>}
+            <TouchableOpacity
+              style={sharedStyles.btnPrimaryFull}
+              onPress={capture}
+              disabled={status === 'reading' || !cameraReady}
+            >
+              {status === 'reading' ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={sharedStyles.btnPrimaryText}>{cameraReady ? 'Scan label' : 'Starting camera...'}</Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity style={sharedStyles.btnGhost} onPress={() => setManual(true)}>
               <Text style={sharedStyles.btnGhostText}>Enter manually instead</Text>
@@ -87,7 +101,13 @@ export default function ScanScreen({ onAdd }: { onAdd: (d: Omit<Drug, 'id'>) => 
           <TouchableOpacity style={sharedStyles.btnPrimary} onPress={addManual}>
             <Text style={sharedStyles.btnPrimaryText}>Add to stack</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={sharedStyles.btnGhost} onPress={() => setManual(false)}>
+          <TouchableOpacity
+            style={sharedStyles.btnGhost}
+            onPress={() => {
+              setCameraReady(false);
+              setManual(false);
+            }}
+          >
             <Text style={sharedStyles.btnGhostText}>Use camera instead</Text>
           </TouchableOpacity>
         </View>

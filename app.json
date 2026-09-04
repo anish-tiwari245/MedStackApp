@@ -39,6 +39,12 @@
           }
         }
       ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to scan medication labels."
+        }
+      ],
       "expo-font",
       "expo-image",
       "expo-status-bar",

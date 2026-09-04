@@ -201,9 +201,9 @@ export default function HomeScreen() {
     });
   }
 
-  function createGroup(name: string, schedule: string) {
+  function createGroup(name: string) {
     setGroups((prev) => {
-      const next = [...prev, { id: newId(), name, schedule: schedule || null }];
+      const next = [...prev, { id: newId(), name }];
       if (user) storage.saveGroups(user.id, next);
       return next;
     });
@@ -254,7 +254,6 @@ export default function HomeScreen() {
           <Text style={styles.brand}>
             Med<Text style={styles.brandEm}>Stack</Text>
           </Text>
-          <Text style={styles.brandTag}>SAFETY MAP</Text>
         </View>
         {!showOnboarding && (
           <TouchableOpacity onPress={signOut}>
@@ -376,7 +375,6 @@ const styles = StyleSheet.create({
   },
   brand: { fontSize: 23, fontWeight: '400', color: COLORS.ink, fontFamily: 'Georgia' },
   brandEm: { fontStyle: 'italic', color: COLORS.teal },
-  brandTag: { fontSize: 11, color: COLORS.inkFaint, letterSpacing: 0.5 },
   signOut: { fontSize: 12.5, color: COLORS.inkFaint, fontWeight: '500', marginBottom: 2 },
   body: { flex: 1, paddingHorizontal: 18 },
   tabbar: {

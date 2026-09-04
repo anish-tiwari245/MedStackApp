@@ -14,8 +14,6 @@ export type Drug = {
 export type Group = {
   id: string;
   name: string;
-  /** Free-form schedule note the user assigns, e.g. "Mornings" or "Mon / Wed / Fri". */
-  schedule?: string | null;
 };
 
 export type Pair = {
@@ -27,7 +25,7 @@ export type Pair = {
   sourceUrl?: string;
 };
 
-export type MapType = 'node' | 'list' | 'signal';
+export type MapType = 'node' | 'list';
 
 export type User = {
   id: string;

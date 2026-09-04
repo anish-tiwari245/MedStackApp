@@ -18,7 +18,6 @@ export const STEPS = [
 const MAP_OPTIONS: { type: MapType; title: string; body: string }[] = [
   { type: 'node', title: 'Node map', body: 'The connected web view - dots for medications, lines for interactions.' },
   { type: 'list', title: 'Relationship list', body: 'Every pair listed plainly with a letter grade, A to F.' },
-  { type: 'signal', title: 'Traffic signals', body: 'Each interaction shown as a red, yellow, or green signal.' },
 ];
 
 export default function Onboarding({

@@ -23,22 +23,20 @@ export default function StackScreen({
   summary: Summary;
   onRemove: (id: string) => void;
   onRename: (id: string, displayName: string | null) => void;
-  onCreateGroup: (name: string, schedule: string) => void;
+  onCreateGroup: (name: string) => void;
   onDeleteGroup: (id: string) => void;
   onAssignGroup: (drugId: string, groupId: string | null) => void;
   onGoScan: () => void;
 }) {
   const [creating, setCreating] = useState(false);
   const [groupName, setGroupName] = useState('');
-  const [groupSchedule, setGroupSchedule] = useState('');
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameDraft, setRenameDraft] = useState('');
 
   const submitGroup = () => {
     if (!groupName.trim()) return;
-    onCreateGroup(groupName.trim(), groupSchedule.trim());
+    onCreateGroup(groupName.trim());
     setGroupName('');
-    setGroupSchedule('');
     setCreating(false);
   };
 
@@ -69,8 +67,8 @@ export default function StackScreen({
     <ScrollView style={{ paddingTop: 8 }}>
       <View style={sharedStyles.rowBetween}>
         <Text style={sharedStyles.eyebrow}>GROUPS</Text>
-        <TouchableOpacity onPress={() => setCreating((c) => !c)}>
-          <Text style={styles.addGroupLink}>{creating ? 'Cancel' : '+ New group'}</Text>
+        <TouchableOpacity style={styles.newGroupBtn} onPress={() => setCreating((c) => !c)}>
+          <Text style={styles.newGroupBtnText}>{creating ? 'Cancel' : 'New group'}</Text>
         </TouchableOpacity>
       </View>
 
@@ -81,16 +79,10 @@ export default function StackScreen({
             style={sharedStyles.input}
             value={groupName}
             onChangeText={setGroupName}
-            placeholder="e.g. Mornings, Dr. Patel's meds"
+            placeholder="e.g. Mon/Tue/Wed, Mornings"
             placeholderTextColor={COLORS.inkFaint}
-          />
-          <Text style={[sharedStyles.eyebrow, { marginTop: 12 }]}>SCHEDULE (OPTIONAL)</Text>
-          <TextInput
-            style={sharedStyles.input}
-            value={groupSchedule}
-            onChangeText={setGroupSchedule}
-            placeholder="e.g. Mon / Wed / Fri, whatever works for you"
-            placeholderTextColor={COLORS.inkFaint}
+            autoFocus
+            onSubmitEditing={submitGroup}
           />
           <TouchableOpacity style={sharedStyles.btnPrimary} onPress={submitGroup}>
             <Text style={sharedStyles.btnPrimaryText}>Create group</Text>
@@ -105,7 +97,7 @@ export default function StackScreen({
               <View style={{ flex: 1 }}>
                 <Text style={styles.groupPillName}>{g.name}</Text>
                 <Text style={styles.groupPillMeta}>
-                  {(g.schedule ? g.schedule + ' - ' : '') + drugs.filter((d) => d.groupId === g.id).length + ' med(s)'}
+                  {drugs.filter((d) => d.groupId === g.id).length + ' med(s)'}
                 </Text>
               </View>
               <TouchableOpacity onPress={() => onDeleteGroup(g.id)} hitSlop={8}>
@@ -116,15 +108,9 @@ export default function StackScreen({
         </View>
       )}
 
-      {groups.length === 0 && !creating && (
-        <Text style={[sharedStyles.subtle, { textAlign: 'left', marginTop: 8 }]}>
-          Groups are optional. Create one if you&apos;d like to organize medications by time of day, prescriber, or anything else.
-        </Text>
-      )}
-
-      <View style={[sharedStyles.rowBetween, { marginTop: 22 }]}>
+      <View style={{ marginTop: 28 }}>
         <Text style={sharedStyles.eyebrow}>CURRENT STACK - {drugs.length}</Text>
-        <View style={{ flexDirection: 'row', gap: 6 }}>
+        <View style={{ flexDirection: 'row', gap: 6, marginTop: 10 }}>
           {summary.red > 0 && <Chip color="red" text={`${summary.red} stop`} />}
           {summary.yellow > 0 && <Chip color="amber" text={`${summary.yellow} caution`} />}
           {summary.green > 0 && <Chip color="green" text={`${summary.green} safe`} />}
@@ -152,13 +138,14 @@ export default function StackScreen({
                       placeholderTextColor={COLORS.inkFaint}
                     />
                   ) : (
-                    <TouchableOpacity onPress={() => startRename(d)}>
-                      <Text style={sharedStyles.drugName}>
-                        {label} <Text style={styles.editHint}>edit</Text>
-                      </Text>
-                    </TouchableOpacity>
+                    <View style={styles.nameRow}>
+                      <Text style={sharedStyles.drugName}>{label}</Text>
+                      <TouchableOpacity style={styles.editBtn} onPress={() => startRename(d)} hitSlop={6}>
+                        <Text style={styles.editHint}>Edit</Text>
+                      </TouchableOpacity>
+                    </View>
                   )}
-                  <Text style={sharedStyles.subtle}>
+                  <Text style={[sharedStyles.subtle, { textAlign: 'left' }]}>
                     {[d.dosage, d.frequency].filter(Boolean).join(' - ') || 'No dosage recorded'}
                     {d.displayName ? ` - scanned as "${d.name}"` : ''}
                   </Text>
@@ -212,7 +199,13 @@ function Chip({ color, text }: { color: 'red' | 'amber' | 'green'; text: string 
 }
 
 const styles = StyleSheet.create({
-  addGroupLink: { color: COLORS.teal, fontSize: 13, fontWeight: '600' },
+  newGroupBtn: {
+    backgroundColor: COLORS.teal,
+    borderRadius: 20,
+    paddingVertical: 7,
+    paddingHorizontal: 14,
+  },
+  newGroupBtnText: { color: '#fff', fontSize: 12.5, fontWeight: '600' },
   groupForm: { marginTop: 10, padding: 16, gap: 4 },
   groupPill: {
     flexDirection: 'row',
@@ -229,6 +222,14 @@ const styles = StyleSheet.create({
   groupPillName: { fontSize: 13, fontWeight: '600', color: COLORS.ink },
   groupPillMeta: { fontSize: 11, color: COLORS.inkFaint, marginTop: 1 },
   groupPillRemove: { color: COLORS.inkFaint, fontSize: 16 },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  editBtn: {
+    borderWidth: 1,
+    borderColor: COLORS.line,
+    borderRadius: 12,
+    paddingVertical: 3,
+    paddingHorizontal: 9,
+  },
   editHint: { fontSize: 10.5, fontWeight: '600', color: COLORS.teal, textTransform: 'uppercase' },
   renameInput: {
     borderWidth: 1,
