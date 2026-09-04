@@ -1,50 +1,51 @@
-# Welcome to your Expo app 👋
+# MedStack
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Mobile app for tracking your medications and catching bad interactions before they happen. Point your camera at a pill bottle, it reads the label, and it flags anything that shouldn't be taken together.
 
-## Get started
+Built with Expo + React Native.
 
-1. Install dependencies
+## What it does
 
-   ```bash
-   npm install
-   ```
+- **Scan or add manually** — camera reads a label and pulls the drug name/dosage, or you can just type it in
+- **Interaction check** — every time your stack changes, it's checked against the others for conflicts and gives each pair a red/yellow/green rating
+- **Groups** — organize meds into groups (mornings, a specific prescriber, whatever) instead of one long list
+- **Rename** — if a scan comes back as "ibuprofen" but you know it as Advil, you can rename it in the stack
+- **Two map views** — a node graph showing how everything connects, or a plain list with letter grades (A–F) if you'd rather not deal with the graph
+- **Accounts** — sign up / sign in, each account keeps its own stack and groups saved on-device
 
-2. Start the app
+Note: sign-in is local only right now — accounts and passwords are stored on the device with AsyncStorage, there's no real backend auth. Fine for a demo, not for anything real yet.
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Running it
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Scan the QR code with Expo Go, or run it in a simulator from the terminal menu.
 
-## Learn more
+### Backend
 
-To learn more about developing your project with Expo, look at the following resources:
+The scan and interaction-check calls hit a small API defined in `lib/api.ts`. Right now it points at a hardcoded local IP:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```ts
+const BACKEND_URL = 'http://192.168.1.244:8080';
+```
 
-## Join the community
+Change that to wherever your backend is actually running before scanning/checking will work.
 
-Join our community of developers creating universal apps.
+## Project layout
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```
+app/(tabs)/index.tsx      top-level screen state, tabs, onboarding
+components/medstack/      Scan / Stack / Map screens, Auth, Onboarding
+components/medstack/maps/ the two map views (node graph, list)
+lib/                      api client, AsyncStorage persistence
+types/medstack.ts         shared types (Drug, Group, Pair, etc.)
+```
+
+This project uses [file-based routing](https://docs.expo.dev/router/introduction) via `expo-router`.
+
+## Disclaimer
+
+This is a prototype. It is not medical advice — always check with a doctor or pharmacist.
