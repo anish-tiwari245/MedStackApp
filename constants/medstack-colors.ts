@@ -1,0 +1,18 @@
+export const COLORS = {
+  bg: '#f4f6f4',
+  surface: '#ffffff',
+  ink: '#1c2b27',
+  inkSoft: '#5a6b66',
+  inkFaint: '#8b9a95',
+  line: '#dde5e1',
+  teal: '#0f766e',
+  red: '#c2453b',
+  redSoft: '#f6e3e1',
+  redInk: '#8f2f28',
+  amber: '#c98a1e',
+  amberSoft: '#f7ecd6',
+  amberInk: '#8a5e12',
+  green: '#3f8f6b',
+  greenSoft: '#dcefe4',
+  greenInk: '#2c6b4e',
+};
